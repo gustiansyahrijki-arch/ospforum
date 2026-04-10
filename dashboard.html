@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPD Intranet | MDT Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, orderBy, serverTimestamp, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUw91H87EP1iCV0hDjkY1SdhN69IZvi6k",
+            authDomain: "opd-portal.firebaseapp.com",
+            projectId: "opd-portal",
+            storageBucket: "opd-portal.firebasestorage.app",
+            messagingSenderId: "117719197995",
+            appId: "1:117719197995:web:99ac33fb30178c7eb17d6e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        const currentBadge = sessionStorage.getItem('badgeNumber');
+        const userRole = sessionStorage.getItem('userRole');
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1491993432082612284/2POOcOBXo31i9JoQ_AwE39vB_v9ICB4zU0pE5WaF8tT_piclMYGjBAcBH-afGnXaXmgK";
+
+        // --- GLOBAL FUNCTIONS ---
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.replace('block', 'hidden'));
+            document.getElementById('section-' + tabId).classList.replace('hidden', 'block');
+            document.querySelectorAll('.nav-btn').forEach(b => { 
+                b.className = 'nav-btn w-full text-left px-4 py-3 text-gray-400 hover:bg-gray-800 rounded transition'; 
+            });
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if(activeBtn) activeBtn.className = 'nav-btn w-full text-left px-4 py-3 bg-lspd-gold text-lspd-blue rounded font-bold transition shadow';
+            document.getElementById('page-title').innerText = tabId.toUpperCase() + " ACCESS";
+        };
+
+        // --- SEARCH LOGIC (ADMIN) ---
+        window.filterPatrolReports = function() {
+            const val = document.getElementById('search-patrol-name').value.toLowerCase();
+            const rows = document.querySelectorAll('#admin-all-reports tr');
+            rows.forEach(row => {
+                const name = row.querySelector('.officer-name-cell').innerText.toLowerCase();
+                row.style.display = name.includes(val) ? '' : 'none';
+            });
+        };
+
+        window.filterWeapons = function() {
+            const val = document.getElementById('search-weapon-serial').value.toLowerCase();
+            const rows = document.querySelectorAll('#admin-all-weapons tr');
+            rows.forEach(row => {
+                const serial = row.querySelector('.serial-cell').innerText.toLowerCase();
+                row.style.display = serial.includes(val) ? '' : 'none';
+            });
+        };
+
+        // --- UPLOAD & SUBMIT ---
+        async function uploadToDiscord(file) {
+            const formData = new FormData();
+            formData.append("file", file);
+            const response = await fetch(DISCORD_WEBHOOK_URL, { method: "POST", body: formData });
+            if (response.ok) {
+                const data = await response.json();
+                return data.attachments[0].url;
+            }
+            throw new Error("Discord Upload Failed");
+        }
+
+        window.submitPatrolLog = async function() {
+            const btn = document.getElementById('btn-submit-patrol');
+            const callsign = document.getElementById('patrol-callsign').value;
+            const startTime = document.getElementById('patrol-start').value;
+            const narrative = document.getElementById('patrol-narrative').value;
+            const imageFile = document.getElementById('patrol-image').files[0];
+
+            if (!callsign || !narrative) return alert("🚨 Data belum lengkap!");
+            btn.disabled = true; btn.innerText = "PROCESSING...";
+
+            try {
+                let imageUrl = imageFile ? await uploadToDiscord(imageFile) : "";
+                await addDoc(collection(db, "patrol_reports"), {
+                    badge: currentBadge, callsign, time_start: startTime, 
+                    narrative, evidence_url: imageUrl, timestamp: serverTimestamp(), comment: ""
+                });
+                alert("✅ LAPORAN TERKIRIM!");
+                document.getElementById('patrolForm').reset();
+                loadMyPatrolReports();
+            } catch (e) { alert("❌ ERROR: " + e.message); }
+            finally { btn.disabled = false; btn.innerText = "SUBMIT TO DATABASE"; }
+        };
+
+        window.submitWeaponRegistry = async function() {
+            const type = document.getElementById('wpn-type').value;
+            const serial = document.getElementById('wpn-serial').value;
+            if (!serial) return alert("🚨 Serial Number wajib diisi!");
+            try {
+                await addDoc(collection(db, "weapons_registry"), {
+                    badge: currentBadge, weapon_type: type, serial_number: serial, timestamp: serverTimestamp()
+                });
+                alert("✅ Senjata Berhasil Terdaftar!");
+                document.getElementById('weaponForm').reset();
+                loadMyWeapons();
+            } catch (e) { alert("❌ Gagal mendaftarkan aset"); }
+        };
+
+        // --- LOAD DATA ---
+        window.loadMyPatrolReports = async function() {
+            const container = document.getElementById('patrol-history-cards');
+            container.innerHTML = "<p class='text-center col-span-full py-10 opacity-50'>Syncing...</p>";
+            const q = query(collection(db, "patrol_reports"), where("badge", "==", currentBadge), orderBy("timestamp", "desc"));
+            const querySnapshot = await getDocs(q);
+            container.innerHTML = "";
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                container.innerHTML += `<div class="bg-white border rounded-lg shadow-sm overflow-hidden p-4">
+                    <div class="flex justify-between mb-2"><span class="bg-lspd-blue text-lspd-gold text-[10px] px-2 py-1 rounded">${data.callsign}</span></div>
+                    <p class="text-xs text-gray-600 line-clamp-2">${data.narrative}</p>
+                    <button onclick="viewDetail('${doc.id}', '${data.callsign}', '${data.time_start}', '${data.time_end}', \`${data.narrative.replace(/"/g, '&quot;')}\`, '${data.evidence_url}', \`${(data.comment || "").replace(/"/g, '&quot;')}\`)" class="mt-3 w-full py-1 text-[10px] border border-lspd-blue text-lspd-blue rounded font-bold transition hover:bg-lspd-blue hover:text-white">DETAIL</button>
+                </div>`;
+            });
+        };
+
+        window.loadMyWeapons = async function() {
+            const container = document.getElementById('weapon-history');
+            const q = query(collection(db, "weapons_registry"), where("badge", "==", currentBadge), orderBy("timestamp", "desc"));
+            const querySnapshot = await getDocs(q);
+            container.innerHTML = "";
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                container.innerHTML += `<tr class="border-b text-xs"><td class="p-3 font-bold">${data.weapon_type}</td><td class="p-3">${data.serial_number}</td><td class="p-3 text-gray-400">${data.timestamp?.toDate().toLocaleDateString() || '-'}</td></tr>`;
+            });
+        };
+
+        window.loadAllDatabase = async function() {
+            if (userRole !== 'admin') return;
+            const container = document.getElementById('admin-all-reports');
+            const weaponContainer = document.getElementById('admin-all-weapons');
+            container.innerHTML = "<tr><td colspan='5' class='p-4 text-center'>Decrypting...</td></tr>";
+            
+            const q = query(collection(db, "patrol_reports"), orderBy("timestamp", "desc"));
+            const querySnapshot = await getDocs(q);
+            container.innerHTML = "";
+            for (const reportDoc of querySnapshot.docs) {
+                const data = reportDoc.data();
+                const offSnap = await getDoc(doc(db, "officers", data.badge));
+                const offName = offSnap.exists() ? offSnap.data().name : "Unknown";
+                container.innerHTML += `<tr class="border-b text-[10px]">
+                    <td class="p-3 text-red-600 font-bold">${data.badge}</td>
+                    <td class="p-3 font-black officer-name-cell uppercase">${offName}</td>
+                    <td class="p-3 font-bold text-lspd-blue">${data.callsign}</td>
+                    <td class="p-3 truncate max-w-[100px]">${data.narrative}</td>
+                    <td class="p-3"><button onclick="viewDetail('${reportDoc.id}', '${data.callsign}', '${data.time_start}', '${data.time_end}', \`${data.narrative.replace(/"/g, '&quot;')}\`, '${data.evidence_url}', \`${(data.comment || "").replace(/"/g, '&quot;')}\` )" class="text-blue-600 underline font-bold">VIEW</button></td>
+                </tr>`;
+            }
+
+            const wq = query(collection(db, "weapons_registry"), orderBy("timestamp", "desc"));
+            const wSnap = await getDocs(wq);
+            weaponContainer.innerHTML = "";
+            for (const wDoc of wSnap.docs) {
+                const wData = wDoc.data();
+                weaponContainer.innerHTML += `<tr class="border-b text-[10px]"><td class="p-2 font-bold">${wData.badge}</td><td class="p-2 font-bold text-lspd-blue">${wData.weapon_type}</td><td class="p-2 font-mono serial-cell font-bold text-red-600">${wData.serial_number}</td></tr>`;
+            }
+        };
+
+        window.saveAdminComment = async function() {
+            const id = document.getElementById('modal-report-id').value;
+            const text = document.getElementById('admin-comment-input').value;
+            try {
+                await updateDoc(doc(db, "patrol_reports", id), { comment: text });
+                alert("✅ Feedback Dispatched!");
+                document.getElementById('detail-modal').classList.replace('flex', 'hidden');
+                if(userRole === 'admin') loadAllDatabase(); else loadMyPatrolReports();
+            } catch (e) { alert("Error: " + e.message); }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('user-badge').innerText = currentBadge;
+            document.getElementById('officer-name').innerText = sessionStorage.getItem('officerName');
+            if (userRole === 'admin') document.getElementById('nav-admin').classList.remove('hidden');
+            loadMyWeapons();
+        });
+    </script>
+
+    <script>
+        tailwind.config = { theme: { extend: { colors: { lspd: { blue: '#0B1E36', gold: '#C5A365' } } } } }
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') window.location.href = 'login.html';
+
+        function viewDetail(id, callsign, start, end, narrative, img, comment) {
+            document.getElementById('modal-report-id').value = id;
+            document.getElementById('modal-callsign').innerText = "Badge Number: " + callsign;
+            document.getElementById('modal-time').innerText = start ;
+            document.getElementById('modal-narrative').innerText = narrative;
+            document.getElementById('admin-comment-input').value = comment || "";
+            
+            const modalImg = document.getElementById('modal-img');
+            if(img && img !== "" && img !== "undefined") { modalImg.src = img; modalImg.classList.remove('hidden'); }
+            else { modalImg.classList.add('hidden'); }
+            
+            const role = sessionStorage.getItem('userRole');
+            document.getElementById('admin-comment-section').className = (role === 'admin') ? 'block border-t pt-4' : 'hidden';
+            
+            const userView = document.getElementById('user-comment-view');
+            if(role !== 'admin' && comment) {
+                userView.innerText = "HQ COMMAND FEEDBACK: " + comment;
+                userView.className = "block mt-4 p-3 bg-yellow-100 text-[10px] italic border-l-4 border-yellow-500 rounded font-bold text-yellow-800";
+            } else {
+                userView.className = "hidden";
+            }
+
+            document.getElementById('detail-modal').classList.replace('hidden', 'flex');
+        }
+        window.viewDetail = viewDetail;
+    </script>
+</head>
+<body class="bg-gray-100 flex h-screen overflow-hidden font-sans text-gray-800">
+
+    <aside class="w-64 bg-lspd-blue text-white flex flex-col shrink-0">
+        <div class="p-6 text-center border-b border-gray-800">
+            <h1 class="text-xl font-bold text-lspd-gold tracking-widest uppercase">LSPD MDT</h1>
+        </div>
+        <nav class="flex-grow p-4 space-y-2">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full text-left px-4 py-3 bg-lspd-gold text-lspd-blue rounded font-bold transition">Dashboard</button>
+            <button onclick="switchTab('patrol'); loadMyPatrolReports();" id="nav-patrol" class="nav-btn w-full text-left px-4 py-3 text-gray-400 hover:bg-gray-800 rounded transition">My Reports</button>
+            <button onclick="switchTab('weapons'); loadMyWeapons();" id="nav-weapons" class="nav-btn w-full text-left px-4 py-3 text-gray-400 hover:bg-gray-800 rounded transition">My Armory</button>
+            <button onclick="switchTab('admin'); loadAllDatabase();" id="nav-admin" class="nav-btn w-full text-left px-4 py-3 text-red-400 hover:bg-red-900 rounded transition hidden border border-red-900 font-bold">🚨 ADMIN ACCESS</button>
+        </nav>
+        <div class="p-4 border-t border-gray-800 text-center">
+            <button onclick="sessionStorage.clear(); window.location.href='login.html';" class="w-full py-2 bg-red-900 text-white rounded text-xs uppercase font-bold hover:bg-red-700 transition">Logout</button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow h-16 flex items-center justify-between px-8 z-10">
+            <h2 id="page-title" class="font-bold text-lspd-blue uppercase tracking-widest">MDT Terminal</h2>
+            <span id="user-badge" class="bg-lspd-blue text-lspd-gold px-4 py-1 rounded-full text-xs font-black"></span>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8">
+            <div id="section-dashboard" class="tab-content block">
+                <div class="bg-white p-10 rounded-xl shadow border-t-4 border-lspd-gold">
+                    <h3 class="text-3xl font-black text-lspd-blue italic uppercase">Status: Connected</h3>
+                    <p class="text-gray-400 mt-2 font-mono text-sm uppercase">Officer: <span id="officer-name" class="font-bold text-gray-700"></span></p>
+                </div>
+            </div>
+
+           <div id="section-patrol" class="tab-content hidden">
+    <div class="bg-white p-6 rounded-xl shadow mb-8">
+        <h4 class="font-bold mb-4 text-lspd-blue uppercase text-sm tracking-widest">New Patrol Report</h4>
+        <form id="patrolForm" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <input type="text" id="patrol-callsign" placeholder="Badge Number" class="p-3 border rounded-lg text-sm outline-none">
+            
+            <!-- Diubah dari type="time" menjadi type="date" -->
+            <div class="flex flex-col">
+                <label class="text-[10px] font-bold text-gray-400 uppercase ml-1 mb-1">Date</label>
+                <input type="date" id="patrol-start" class="p-3 border rounded-lg text-sm focus:border-lspd-gold outline-none">
+            </div>
+            <div class="flex flex-col justify-end">
+                <input type="file" id="patrol-image" accept="image/*" class="text-xs p-2 border rounded-lg bg-gray-50">
+            </div>
+
+            <textarea id="patrol-narrative" rows="2" placeholder="Summary of the patrol..." class="md:col-span-3 p-3 border rounded-lg text-sm outline-none focus:border-lspd-gold"></textarea>
+            
+            <button type="button" id="btn-submit-patrol" onclick="submitPatrolLog()" class="bg-lspd-blue text-white py-3 rounded-lg font-black text-xs uppercase tracking-widest hover:bg-black transition shadow-lg">Submit Report</button>
+        </form>
+    </div>
+    <div id="patrol-history-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+</div>
+
+            <div id="section-weapons" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow border-t-4 border-lspd-blue">
+                        <h4 class="font-bold mb-4 text-lspd-blue uppercase text-sm">Register Firearm</h4>
+                        <form id="weaponForm" class="space-y-4">
+                            <select id="wpn-type" class="w-full p-3 border rounded-lg text-sm font-bold">
+                                <option>Tazer</option><option>Combat Pistol</option><option>AP Pistol</option><option>Pistol Kacang</option><option>Revolver</option><option>SMG</option><option>Carbine Rifle</option><option>Bullpup Shotgun</option><option>Sniper Rifle</option>
+                            </select>
+                            <input type="text" id="wpn-serial" placeholder="Serial Number (SN-XXXX)" class="w-full p-3 border rounded-lg text-sm font-mono">
+                            <button type="button" onclick="submitWeaponRegistry()" class="w-full bg-lspd-gold text-lspd-blue py-3 rounded-lg font-bold text-xs uppercase shadow hover:bg-yellow-500 transition">Register Equipment</button>
+                        </form>
+                    </div>
+                    <div class="bg-white rounded-xl shadow overflow-hidden">
+                        <div class="bg-lspd-blue text-white p-4 font-bold text-xs uppercase tracking-widest">My Assigned Assets</div>
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 text-[10px] uppercase text-gray-400 font-black"><tr><th class="p-3">Type</th><th class="p-3">Serial</th><th class="p-3">Reg Date</th></tr></thead>
+                            <tbody id="weapon-history"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-admin" class="tab-content hidden space-y-8">
+                <div class="bg-white p-4 rounded-xl shadow border border-red-200 flex items-center space-x-4">
+                    <div class="font-black text-red-600 text-xs uppercase shrink-0">Search Logs:</div>
+                    <input type="text" id="search-patrol-name" onkeyup="filterPatrolReports()" placeholder="Search by Officer Name..." class="w-full p-2 border rounded text-sm outline-none focus:border-red-600">
+                </div>
+                <div class="bg-white rounded-xl shadow overflow-hidden border border-red-200">
+                    <div class="bg-red-900 text-white p-4 font-black uppercase tracking-widest text-xs">Master Patrol Logs</div>
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-100 text-[10px] uppercase text-gray-400">
+                            <tr><th class="p-4">Badge</th><th class="p-4">Officer Name</th><th class="p-4">Unit</th><th class="p-4">Summary</th><th class="p-4">Action</th></tr>
+                        </thead>
+                        <tbody id="admin-all-reports"></tbody>
+                    </table>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow border border-gray-300 flex items-center space-x-4">
+                    <div class="font-black text-gray-600 text-xs uppercase shrink-0">Search Weapons:</div>
+                    <input type="text" id="search-weapon-serial" onkeyup="filterWeapons()" placeholder="Search by Serial Number..." class="w-full p-2 border rounded text-sm outline-none focus:border-blue-600">
+                </div>
+                <div class="bg-white rounded-xl shadow overflow-hidden border border-gray-300">
+                    <div class="bg-gray-800 text-white p-4 font-black uppercase tracking-widest text-xs">All Weapon Registry</div>
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-100 text-[10px] uppercase text-gray-400">
+                            <tr><th class="p-2 px-4">Owner Badge</th><th class="p-2">Weapon Type</th><th class="p-2">Serial Number</th></tr>
+                        </thead>
+                        <tbody id="admin-all-weapons"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="detail-modal" class="hidden fixed inset-0 bg-black/95 z-[100] p-6 items-center justify-center">
+        <div class="bg-white w-full max-w-2xl rounded-2xl overflow-hidden flex flex-col shadow-2xl">
+            <div class="p-4 bg-lspd-blue text-white flex justify-between items-center">
+                <span class="font-bold text-xs uppercase italic tracking-widest">Secure Record Moderation</span>
+                <button onclick="document.getElementById('detail-modal').classList.replace('flex','hidden')" class="text-white text-xl hover:text-lspd-gold">✕</button>
+            </div>
+            <div class="p-6 space-y-6 overflow-y-auto max-h-[85vh]">
+                <input type="hidden" id="modal-report-id">
+                <div class="grid grid-cols-2 gap-4 text-xs font-black uppercase tracking-widest">
+                    <p id="modal-callsign" class="text-lspd-blue border-l-4 border-lspd-gold pl-2"></p>
+                    <p id="modal-time" class="text-right text-gray-400"></p>
+                </div>
+                <p id="modal-narrative" class="text-sm bg-gray-50 p-5 rounded-xl italic border text-gray-700 leading-relaxed"></p>
+                <img id="modal-img" src="" class="w-full rounded-xl border shadow-lg">
+                
+                <div id="user-comment-view" class="hidden"></div>
+                
+                <div id="admin-comment-section" class="hidden">
+                    <label class="text-[10px] font-black text-red-600 uppercase tracking-widest">HQ Directives / Feedback</label>
+                    <textarea id="admin-comment-input" class="w-full p-3 mt-1 border rounded-lg text-sm bg-yellow-50 outline-none focus:border-red-600" rows="3" placeholder="Enter disciplinary notes or feedback..."></textarea>
+                    <button onclick="saveAdminComment()" class="w-full mt-2 bg-red-900 text-white py-3 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition shadow-md">Dispatch Feedback</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

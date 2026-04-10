@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Origami State Police | Official Website</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lspd: {
+                            blue: '#0B1E36',
+                            gold: '#C5A365',
+                            light: '#E2E8F0',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 font-sans antialiased text-gray-800 flex flex-col min-h-screen">
+
+    <header class="bg-lspd-blue text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-lspd-gold rounded-full flex items-center justify-center font-bold text-lspd-blue text-xs">
+                    OSP
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">O.S.P</h1>
+                    <p class="text-xs text-gray-300 uppercase tracking-widest">Origami State Police</p>
+                </div>
+            </a>
+
+            <nav class="hidden lg:flex space-x-8 text-sm font-semibold text-gray-200">
+                <a href="index.html" class="text-lspd-gold transition duration-300 border-b-2 border-lspd-gold pb-1">Home</a>
+                <a href="about.html" class="hover:text-lspd-gold transition duration-300">About Us</a>
+                <a href="divisions.html" class="hover:text-lspd-gold transition duration-300">Divisions</a>
+                <a href="media.html" class="hover:text-lspd-gold transition duration-300">Media</a>
+            </nav>
+
+            <div class="flex items-center space-x-3">
+                <!-- TOMBOL LOGIN AS OFFICER BARU -->
+                <a href="login.html" class="hidden md:flex items-center bg-gray-800 border border-gray-600 text-gray-300 px-4 py-2 rounded text-xs font-bold hover:bg-gray-700 hover:text-white transition duration-300">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                    LOGIN AS OFFICER
+                </a>
+                
+                <a href="join.html" class="hidden md:block border-2 border-lspd-gold text-lspd-gold px-4 py-2 rounded text-xs font-bold hover:bg-lspd-gold hover:text-lspd-blue transition duration-300">
+                    JOIN ACADEMY
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative bg-lspd-blue h-[80vh] flex items-center bg-cover bg-center" style="background-image: linear-gradient(rgba(11, 30, 54, 0.8), rgba(11, 30, 54, 0.9)), url('https://images.unsplash.com/photo-1595188812683-146e454f762d?q=80&w=2000&auto=format&fit=crop');">
+        <div class="container mx-auto px-6 relative z-10 text-center md:text-left">
+            <h2 class="text-lspd-gold font-bold tracking-widest uppercase mb-2">Obey & Survive</h2>
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6 uppercase">
+                To Protect <br> And To Serve
+            </h1>
+            <p class="text-gray-300 md:text-lg max-w-2xl mb-8 leading-relaxed">
+                Welcome to the official website of the Origami State Police. Committed to community safety, integrity, and professional law enforcement across the city.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 md:justify-start justify-center">
+                <a href="login.html" class="bg-lspd-gold text-lspd-blue font-bold px-8 py-3 rounded hover:bg-yellow-500 transition duration-300 text-center shadow-lg">
+                    Submit Patrol Report
+                </a>
+                <a href="media.html" class="border-2 border-white text-white font-bold px-8 py-3 rounded hover:bg-white hover:text-lspd-blue transition duration-300 text-center">
+                    View Press Release
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <main class="flex-grow">
+        
+        <section class="relative z-20 -mt-16 sm:-mt-24 pb-12">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <div class="bg-white rounded-lg shadow-xl p-8 border-t-4 border-lspd-blue hover:-translate-y-2 transition duration-300">
+                        <div class="text-lspd-blue mb-4">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Patrol Log</h3>
+                        <p class="text-gray-600 text-sm mb-4">Internal use only. Officers must submit their shift logs, incident summaries, and citations here.</p>
+                        <a href="login.html" class="text-lspd-blue font-bold text-sm hover:text-lspd-gold transition flex items-center">Open Form <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></a>
+                    </div>
+
+                    <div class="bg-lspd-blue rounded-lg shadow-xl p-8 border-t-4 border-lspd-gold hover:-translate-y-2 transition duration-300">
+                        <div class="text-lspd-gold mb-4">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Emergency 9-1-1</h3>
+                        <p class="text-gray-300 text-sm mb-4">For life-threatening emergencies or crimes in progress. Available 24/7 in Origami State.</p>
+                        <div class="text-lspd-gold font-bold text-2xl tracking-wider">DIAL 911</div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-xl p-8 border-t-4 border-lspd-blue hover:-translate-y-2 transition duration-300">
+                        <div class="text-lspd-blue mb-4">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Join the OPD</h3>
+                        <p class="text-gray-600 text-sm mb-4">Take the oath. We are looking for dedicated individuals to serve the citizens of Origami State.</p>
+                        <a href="join.html" class="text-lspd-blue font-bold text-sm hover:text-lspd-gold transition flex items-center">Apply Now <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="flex justify-between items-end mb-10">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-lspd-blue uppercase tracking-wide">NEWS</h2>
+                        <div class="h-1 w-20 bg-lspd-gold mt-2"></div>
+                    </div>
+                    <a href="media.html" class="hidden sm:block text-lspd-blue font-semibold hover:text-lspd-gold transition">View All News &rarr;</a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md group">
+                        <div class="h-48 bg-gray-300 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1542282088-fe8426682b8f?q=80&w=800&auto=format&fit=crop" alt="Police Car" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="p-6">
+                            <span class="text-xs font-bold text-lspd-gold uppercase">Patrol Division</span>
+                            <h3 class="text-lg font-bold text-gray-800 mt-2 mb-3 group-hover:text-lspd-blue transition">Operation Safe Streets Yields Results</h3>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">The Los Santos Police Department conducted a city-wide operation this weekend targeting illegal street racing and reckless driving...</p>
+                            <span class="text-xs text-gray-400">April 10, 2026</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md group">
+                        <div class="h-48 bg-gray-300 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=800&auto=format&fit=crop" alt="Police Badge" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="p-6">
+                            <span class="text-xs font-bold text-lspd-gold uppercase">Recruitment</span>
+                            <h3 class="text-lg font-bold text-gray-800 mt-2 mb-3 group-hover:text-lspd-blue transition">Academy Class 24-B Graduation</h3>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">Chief of Police welcomes 45 new probationary officers to the force following a rigorous 6-month training program at the academy...</p>
+                            <span class="text-xs text-gray-400">April 5, 2026</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md group">
+                        <div class="h-48 bg-gray-300 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1589828131804-9426f4992984?q=80&w=800&auto=format&fit=crop" alt="Detective" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        </div>
+                        <div class="p-6">
+                            <span class="text-xs font-bold text-lspd-gold uppercase">Detective Bureau</span>
+                            <h3 class="text-lg font-bold text-gray-800 mt-2 mb-3 group-hover:text-lspd-blue transition">Attempted First-Degree Murder</h3>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">A joint task force led by OPD Homicide Detectives successfully caught the killer relaxing inside his home...</p>
+                            <span class="text-xs text-gray-400">April 2, 2026</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="media.html" class="block sm:hidden text-center mt-8 text-lspd-blue font-semibold hover:text-lspd-gold transition">View All News &rarr;</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-lspd-blue text-white pt-16 pb-8 border-t-4 border-lspd-gold mt-auto">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 bg-lspd-gold rounded-full flex items-center justify-center font-bold text-lspd-blue text-xs">
+                            BADGE
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold tracking-wider">L.S.P.D</h2>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Committed to protecting the lives, property, and rights of all people in Los Santos. Obey and Survive.
+                    </p>
+                    <div class="bg-red-900/50 border border-red-500 p-3 rounded text-xs text-red-200">
+                        <strong>Disclaimer:</strong> This is a fictional website created for a Grand Theft Auto V (FiveM) roleplay server and portfolio purposes. Not a real law enforcement agency.
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-lspd-gold mb-4 uppercase tracking-wider">Quick Links</h3>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li><a href="index.html" class="hover:text-white transition">Home</a></li>
+                        <li><a href="about.html" class="hover:text-white transition">About OSP</a></li>
+                        <li><a href="divisions.html" class="hover:text-white transition">Bureaus & Divisions</a></li>
+                        <li><a href="media.html" class="hover:text-white transition">News</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-lspd-gold mb-4 uppercase tracking-wider">Community</h3>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li><a href="join.html" class="hover:text-white transition">Join the Academy</a></li>
+                        <li><a href="#" class="hover:text-white transition">File a Report</a></li>
+                        <li><a href="#" class="hover:text-white transition">Public Records</a></li>
+                        <li><a href="#" class="hover:text-white transition">Server Rules</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-lspd-gold mb-4 uppercase tracking-wider">Headquarters</h3>
+                    <ul class="space-y-3 text-sm text-gray-300">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 mr-2 text-lspd-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <span>Mission Row Police Station,<br>Los Santos, Origami</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-lspd-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                            <span>Non-Emergency: Call Service</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <p>&copy; 2026 Origami State Police. All rights reserved.</p>
+                <p>&copy; Made with ❤️ by Mitch Z</p>
+                <div class="mt-4 md:mt-0 space-x-4">
+                    <a href="#" class="hover:text-lspd-gold transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-lspd-gold transition">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

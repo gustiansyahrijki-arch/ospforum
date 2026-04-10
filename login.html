@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Access | OPD Intranet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lspd: {
+                            blue: '#0B1E36',
+                            gold: '#C5A365',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUw91H87EP1iCV0hDjkY1SdhN69IZvi6k",
+            authDomain: "opd-portal.firebaseapp.com",
+            projectId: "opd-portal",
+            storageBucket: "opd-portal.firebasestorage.app",
+            messagingSenderId: "117719197995",
+            appId: "1:117719197995:web:99ac33fb30178c7eb17d6e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- DATA DOM ELEMENTS ---
+        const loginToggle = document.getElementById('login-toggle');
+        const registerToggle = document.getElementById('register-toggle');
+        const loginSection = document.getElementById('login-section');
+        const registerSection = document.getElementById('register-section');
+        const badgeInput = document.getElementById('badge');
+        const rememberCheckbox = document.getElementById('remember-me');
+
+        // --- 1. FITUR AUTO-FILL (Saat Halaman Dimuat) ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedBadge = localStorage.getItem('rememberedBadge');
+            if (savedBadge) {
+                badgeInput.value = savedBadge;
+                rememberCheckbox.checked = true;
+            }
+        });
+
+        // --- LOGIKA SWITCHER ---
+        loginToggle.addEventListener('click', () => {
+            loginSection.classList.remove('hidden');
+            registerSection.classList.add('hidden');
+            loginToggle.classList.add('border-lspd-gold', 'text-white');
+            registerToggle.classList.remove('border-lspd-gold', 'text-white');
+        });
+
+        registerToggle.addEventListener('click', () => {
+            registerSection.classList.remove('hidden');
+            loginSection.classList.add('hidden');
+            registerToggle.classList.add('border-lspd-gold', 'text-white');
+            loginToggle.classList.remove('border-lspd-gold', 'text-white');
+        });
+
+        // --- LOGIKA FIREBASE (LOGIN) ---
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const badge = badgeInput.value;
+            const password = document.getElementById('password').value;
+            const email = `${badge}@lspd.internal`;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                const docSnap = await getDoc(doc(db, "officers", badge));
+                
+                if (docSnap.exists()) {
+                    // --- 2. FITUR REMEMBER ME (Simpan/Hapus Data) ---
+                    if (rememberCheckbox.checked) {
+                        localStorage.setItem('rememberedBadge', badge);
+                    } else {
+                        localStorage.removeItem('rememberedBadge');
+                    }
+
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('badgeNumber', badge);
+                    sessionStorage.setItem('officerName', docSnap.data().name);
+                    sessionStorage.setItem('userRole', docSnap.data().role || 'officer'); // SIMPAN ROLE DISINI
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (error) {
+                alert("Authorization Failed: Check Badge/Password");
+            }
+        });
+
+        // --- LOGIKA FIREBASE (REGISTER) ---
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const badge = document.getElementById('reg-badge').value;
+            const password = document.getElementById('reg-password').value;
+            const email = `${badge}@lspd.internal`;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await setDoc(doc(db, "officers", badge), {
+                    name: name,
+                    badge: badge,
+                    uid: userCredential.user.uid,
+                    role: "officer",
+                    createdAt: new Date()
+                });
+                alert("Account Created! You can now login.");
+                loginToggle.click();
+            } catch (error) {
+                alert("Registration Error: " + error.message);
+            }
+        });
+    </script>
+</head>
+<body class="bg-gray-900 text-gray-200 h-screen flex items-center justify-center bg-cover bg-center" style="background-image: linear-gradient(rgba(17, 24, 39, 0.9), rgba(17, 24, 39, 0.95)), url('https://images.unsplash.com/photo-1595188812683-146e454f762d?q=80&w=2000&auto=format&fit=crop');">
+
+    <div class="max-w-md w-full px-6">
+        <div class="bg-gray-800 rounded-lg shadow-2xl overflow-hidden border border-gray-700">
+            
+            <div class="bg-lspd-blue p-6 text-center border-b-4 border-lspd-gold">
+                <div class="w-12 h-12 bg-lspd-gold rounded-full flex items-center justify-center font-bold text-lspd-blue text-xs mx-auto mb-3">LSPD</div>
+                <h1 class="text-xl font-bold text-white tracking-widest uppercase">OPD Portal</h1>
+            </div>
+
+            <div class="flex border-b border-gray-700">
+                <button id="login-toggle" class="w-1/2 py-3 text-sm font-bold uppercase tracking-wider border-b-2 border-lspd-gold text-white transition">LOGIN</button>
+                <button id="register-toggle" class="w-1/2 py-3 text-sm font-bold uppercase tracking-wider border-b-2 border-transparent text-gray-500 hover:text-gray-300 transition">REGISTER</button>
+            </div>
+
+            <div class="p-8">
+                <div id="login-section">
+                    <form id="loginForm" class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Badge Number</label>
+                            <input type="number" id="badge" required class="w-full px-4 py-3 rounded bg-gray-900/50 border border-gray-600 text-white focus:border-lspd-gold outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Security Code</label>
+                            <input type="password" id="password" required class="w-full px-4 py-3 rounded bg-gray-900/50 border border-gray-600 text-white focus:border-lspd-gold outline-none transition">
+                        </div>
+
+                        <div class="flex items-center">
+                            <input type="checkbox" id="remember-me" class="w-4 h-4 rounded border-gray-600 bg-gray-900 text-lspd-gold focus:ring-lspd-gold">
+                            <label for="remember-me" class="ml-2 text-sm text-gray-400 font-medium">Remember Account</label>
+                        </div>
+
+                        <button type="submit" class="w-full bg-lspd-gold text-lspd-blue font-black py-3 rounded hover:bg-yellow-500 transition shadow-lg">LOGIN</button>
+                    </form>
+                </div>
+
+                <div id="register-section" class="hidden">
+                    <form id="registerForm" class="space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Officer Full Name</label>
+                            <input type="text" id="reg-name" required class="w-full px-4 py-3 rounded bg-gray-900/50 border border-gray-600 text-white focus:border-lspd-gold outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Assigned Badge #</label>
+                            <input type="number" id="reg-badge" required class="w-full px-4 py-3 rounded bg-gray-900/50 border border-gray-600 text-white focus:border-lspd-gold outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Set Password</label>
+                            <input type="password" id="reg-password" required class="w-full px-4 py-3 rounded bg-gray-900/50 border border-gray-600 text-white focus:border-lspd-gold outline-none transition">
+                        </div>
+                        <button type="submit" class="w-full border-2 border-lspd-gold text-lspd-gold font-black py-3 rounded hover:bg-lspd-gold hover:text-lspd-blue transition uppercase">Create Personnel File</button>
+                    </form>
+                </div>
+
+                <div class="text-center mt-6">
+                    <a href="index.html" class="text-[10px] text-gray-600 hover:text-gray-400 uppercase tracking-widest transition">Public Terminal Access &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

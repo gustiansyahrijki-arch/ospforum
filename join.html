@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join The Force | OPD Recruitment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lspd: {
+                            blue: '#0B1E36',
+                            gold: '#C5A365',
+                            light: '#E2E8F0',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-800 flex flex-col min-h-screen">
+
+    <!-- HEADER -->
+    <header class="bg-lspd-blue text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-lspd-gold rounded-full flex items-center justify-center font-bold text-lspd-blue text-xs">
+                    OSP
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">O.S.P</h1>
+                    <p class="text-xs text-gray-300 uppercase tracking-widest">Origami State Police</p>
+                </div>
+            </a>
+            <nav class="hidden md:flex space-x-8 text-sm font-semibold text-gray-200">
+                <a href="index.html" class="hover:text-lspd-gold transition duration-300">Home</a>
+                <a href="about.html" class="hover:text-lspd-gold transition duration-300">About Us</a>
+                <a href="divisions.html" class="hover:text-lspd-gold transition duration-300">Divisions</a>
+                <a href="media.html" class="hover:text-lspd-gold transition duration-300">Media</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <a href="login.html" class="hidden md:flex items-center text-gray-300 px-4 py-2 hover:text-white transition duration-300 text-xs font-bold">
+                    LOGIN AS OFFICER
+                </a>
+                <a href="join.html" class="hidden md:block bg-lspd-gold text-lspd-blue border-2 border-lspd-gold px-4 py-2 rounded font-bold hover:bg-transparent hover:text-lspd-gold transition duration-300">
+                    JOIN THE ACADEMY
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-lspd-blue py-16">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl font-extrabold text-white uppercase tracking-wider mb-4">Start Your Career</h1>
+            <p class="text-lspd-gold text-lg max-w-2xl mx-auto font-semibold">Do you have what it takes to protect Los Santos?</p>
+        </div>
+    </section>
+
+    <main class="flex-grow py-12">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col lg:flex-row gap-12">
+                
+                <!-- SIDEBAR KIRI -->
+                <div class="w-full lg:w-1/3">
+                    <div class="bg-white p-8 rounded-lg shadow-md border-t-4 border-lspd-blue mb-8">
+                        <h3 class="text-xl font-bold text-lspd-blue mb-4 flex items-center">
+                            <svg class="w-6 h-6 mr-2 text-lspd-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Basic Requirements
+                        </h3>
+                        <ul class="space-y-3 text-gray-600 text-sm">
+                            <li class="flex items-start"><span class="text-lspd-gold font-bold mr-2">&bull;</span> Must be at least 21 years of age.</li>
+                            <li class="flex items-start"><span class="text-lspd-gold font-bold mr-2">&bull;</span> High school diploma or GED equivalent.</li>
+                            <li class="flex items-start"><span class="text-lspd-gold font-bold mr-2">&bull;</span> Valid San Andreas Driver's License.</li>
+                            <li class="flex items-start"><span class="text-lspd-gold font-bold mr-2">&bull;</span> No prior felony convictions.</li>
+                            <li class="flex items-start"><span class="text-lspd-gold font-bold mr-2">&bull;</span> Excellent physical and mental condition.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-lspd-blue text-white p-8 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-lspd-gold mb-4">The Hiring Process</h3>
+                        <ol class="space-y-4 text-sm text-gray-300 list-decimal list-inside">
+                            <li>Submit Online Application</li>
+                            <li>Written Examination</li>
+                            <li>Physical Agility Test (PAT)</li>
+                            <li>Background Investigation</li>
+                            <li>Psychological & Medical Evaluation</li>
+                            <li>Police Academy Training</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- AREA FORM KANAN -->
+                <div class="w-full lg:w-2/3">
+                    <div class="bg-white p-8 md:p-10 rounded-lg shadow-xl">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Academy Application Form</h2>
+                        
+                        <!-- Form id ditambahkan untuk JS -->
+                        <form id="recruitmentForm" class="space-y-6">
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">First Name (In-Game)</label>
+                                    <input type="text" name="first_name" required placeholder="e.g. John" class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:border-lspd-blue focus:ring-2 focus:ring-lspd-blue/20 transition outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Last Name (In-Game)</label>
+                                    <input type="text" name="last_name" required placeholder="e.g. Doe" class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:border-lspd-blue focus:ring-2 focus:ring-lspd-blue/20 transition outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Discord Username</label>
+                                    <input type="text" name="discord" required placeholder="username#1234" class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:border-lspd-blue focus:ring-2 focus:ring-lspd-blue/20 transition outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Date of Birth (In-Game)</label>
+                                    <input type="date" name="dob" required class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:border-lspd-blue focus:ring-2 focus:ring-lspd-blue/20 transition outline-none text-gray-500">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Do you have prior Law Enforcement RP experience?</label>
+                                <select name="experience" required class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:border-lspd-blue focus:ring-2 focus:ring-lspd-blue/20 transition outline-none appearance-none">
+                                    <option value="" disabled selected>Select an option</option>
+                                    <option value="Yes, prior experience">Yes, I have prior experience</option>
+                                    <option value="No, first time">No, this will be my first time</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Why do you want to join the Los Santos Police Department?</label>
+                                <textarea name="motivation" required rows="5" placeholder="Tell us about your character's motivation (Min. 50 words)..." class="w-full px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:border-lspd-blue focus:ring-2 focus:ring-lspd-blue/20 transition outline-none resize-none"></textarea>
+                            </div>
+
+                            <div class="pt-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                                <label class="flex items-center text-sm text-gray-600 cursor-pointer">
+                                    <input type="checkbox" required class="w-4 h-4 text-lspd-blue border-gray-300 rounded focus:ring-lspd-blue mr-2">
+                                    I confirm that all information provided is accurate.
+                                </label>
+                                <button type="submit" id="submitBtn" class="w-full md:w-auto bg-lspd-blue text-lspd-gold font-bold px-8 py-3 rounded-lg hover:bg-lspd-gold hover:text-lspd-blue transition duration-300 shadow-lg">
+                                    Submit Application
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-lspd-blue text-white pt-16 pb-8 border-t-4 border-lspd-gold mt-auto">
+        <div class="container mx-auto px-6">
+            <div class="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <p>&copy; 2026 Los Santos Police Department. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT DISCORD WEBHOOK -->
+    <script>
+        // GANTI TULISAN DI BAWAH INI DENGAN URL WEBHOOK DISCORD KAMU
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1491951645649801300/beOBeSRi8Z0uFvQTbpCJPxD1kISskZqLQ9Dxp1vgCvwiP8VZ8RAcKUF6SYPCOU5YbiR2";
+
+        document.getElementById('recruitmentForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Mencegah reload halaman
+            
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Sending...";
+            btn.classList.add("opacity-50", "cursor-not-allowed");
+
+            // Ambil data dari form
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            // Susun pesan untuk Discord (Embed Format)
+            const payload = {
+                username: "LSPD Recruitment System",
+                avatar_url: "https://i.imgur.com/gK2JcW6.png", // Icon Polisi (opsional)
+                embeds: [{
+                    title: "🚨 New Academy Application Received",
+                    color: 12952421, // Warna Emas LSPD (Decimal code)
+                    fields: [
+                        { name: "Nama Karakter (In-Game)", value: data.first_name + " " + data.last_name, inline: true },
+                        { name: "Tanggal Lahir", value: data.dob, inline: true },
+                        { name: "Discord Username", value: data.discord, inline: false },
+                        { name: "Pengalaman RP Polisi", value: data.experience, inline: false },
+                        { name: "Motivasi Bergabung", value: data.motivation, inline: false }
+                    ],
+                    footer: { text: "LSPD Web Portal • " + new Date().toLocaleString() }
+                }]
+            };
+
+            // Kirim ke Discord menggunakan Fetch API
+            fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if(response.ok) {
+                    alert("Application Successfully Submitted to LSPD High Command!");
+                    window.location.href = "index.html"; // Kembali ke beranda
+                } else {
+                    alert("Error sending application. Please check your Webhook URL.");
+                    btn.innerText = "Submit Application";
+                    btn.classList.remove("opacity-50", "cursor-not-allowed");
+                }
+            })
+            .catch(err => {
+                alert("Connection failed: " + err);
+                btn.innerText = "Submit Application";
+                btn.classList.remove("opacity-50", "cursor-not-allowed");
+            });
+        });
+    </script>
+</body>
+</html>
